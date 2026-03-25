@@ -16,5 +16,3 @@ pip3 install -r requirements.txt
 ```bash
 python3 kemopop.py -h
 ```
-
-If no output path is specified, it should have generated a file named `kemopop.ics`.
