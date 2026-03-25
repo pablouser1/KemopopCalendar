@@ -16,4 +16,4 @@ pip3 install -r requirements.txt
 python3 kemopop.py 'PATH_TO_DECOMPILED_PROJECT' ['OUTPUT_PATH']
 ```
 
-It should have generated a file named `kemopop.ics` in the script path.
+If no output path is specified, it should have generated a file named `kemopop.ics`.
