@@ -1,4 +1,5 @@
 from datetime import date, datetime, timedelta, UTC
+import polib
 from os import scandir
 from os.path import join
 from sys import argv
@@ -7,16 +8,15 @@ from icalendar import Calendar, Event
 
 FOLDERS = ['kemopop_base', 'kemopop_dlc_summer', 'kemopop_guests']
 
-def normalize_name(name: str) -> str:
+def get_character_name(character_id: str, po: polib.POFile) -> str:
+    entry = po.find(f"character_{character_id}")
+    if entry:
+        return entry.msgstr
+    
+    # Fallback if not found
     return name.replace('guest_', '').capitalize()
 
-def main(path: str, output: str):
-    now = datetime.now(UTC)
-    year = now.year
-    
-    cal = Calendar()
-    cal.add('version', '2.0')
-    cal.add('prodid', '//Kemopop! Calendar//')
+def get_characters(path: str, po: polib.POFile) -> list:
     characters = {}
 
     for folder in FOLDERS:
@@ -31,13 +31,22 @@ def main(path: str, output: str):
                 birthday_month = node.properties.get('birthday_month', 1)
                 characters[character_group] = {
                     'id': character_group,
-                    'name': normalize_name(character_group),
+                    'name': get_character_name(node['character_id'], po),
                     'birthday_month': birthday_month,
                     'birthday_day': node['birthday_day']
                 }
     
-    characters_arr = list(characters.values())
-    for character in characters_arr:
+    return list(characters.values())
+
+def build_cal(characters: list) -> Calendar:
+    now = datetime.now(UTC)
+    year = now.year
+
+    cal = Calendar()
+    cal.add('version', '2.0')
+    cal.add('prodid', '//Kemopop! Calendar//')
+
+    for character in characters:
         start_date = date(year, character['birthday_month'], character['birthday_day'])
         end_date = start_date + timedelta(days=1)
         event = Event()
@@ -49,6 +58,13 @@ def main(path: str, output: str):
         event.add('rrule', {'FREQ': 'YEARLY'})
         cal.add_component(event)
     
+    return cal
+
+def main(path: str, output: str):
+    po = polib.pofile(join(path, 'locale', 'en', 'strings.po'))
+    characters = get_characters(path, po)
+    cal = build_cal(characters)
+
     with open(output, 'wb') as f:
         f.write(cal.to_ical())
 
