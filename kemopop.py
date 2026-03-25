@@ -26,11 +26,13 @@ def main(path: str, output: str):
             scene = load(join(subfolder, 'character.tscn'))
             node = scene.get_node()
             character_group = node['character_group']
-            if character_group not in characters and node.properties.get('birthday_month') is not None:
+            if character_group not in characters:
+                # When no birthday_month default to January
+                birthday_month = node.properties.get('birthday_month', 1)
                 characters[character_group] = {
                     'id': character_group,
                     'name': normalize_name(character_group),
-                    'birthday_month': node['birthday_month'],
+                    'birthday_month': birthday_month,
                     'birthday_day': node['birthday_day']
                 }
     
