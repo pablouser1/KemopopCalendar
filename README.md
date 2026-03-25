@@ -2,6 +2,7 @@
 Script to export birthdays to ics.
 
 ## Requirements
+* Kemopop!
 * Kemopop! Boys in Hawaii!
 * Python3
 * Decompiled project (you can use [GDRE](https://github.com/GDRETools/gdsdecomp))
