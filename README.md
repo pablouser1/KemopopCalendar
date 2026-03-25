@@ -13,7 +13,7 @@ pip3 install -r requirements.txt
 
 ## Usage
 ```bash
-python3 kemopop.py 'PATH_TO_DECOMPILED_PROJECT' ['OUTPUT_PATH']
+python3 kemopop.py -h
 ```
 
 If no output path is specified, it should have generated a file named `kemopop.ics`.

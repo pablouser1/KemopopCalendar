@@ -1,8 +1,8 @@
+import argparse
 from datetime import date, datetime, timedelta, UTC
 import polib
 from os import scandir
 from os.path import join
-from sys import argv
 from godot_parser import load
 from icalendar import Calendar, Event
 
@@ -60,8 +60,8 @@ def build_cal(characters: list) -> Calendar:
     
     return cal
 
-def main(path: str, output: str):
-    po = polib.pofile(join(path, 'locale', 'en', 'strings.po'))
+def main(path: str, output: str, lang: str):
+    po = polib.pofile(join(path, 'locale', lang, 'strings.po'))
     characters = get_characters(path, po)
     cal = build_cal(characters)
 
@@ -69,8 +69,11 @@ def main(path: str, output: str):
         f.write(cal.to_ical())
 
 if __name__ == '__main__':
-    if len(argv) == 1:
-        print('No path passed!')
-        exit(1)
+    parser = argparse.ArgumentParser(prog='KemopopCal', description='Export birthdays to ics')
+    parser.add_argument('path')
+    parser.add_argument('-o', '--output', default='kemopop.ics', help='File output')
+    parser.add_argument('-l', '--lang', default='en', help='Language for characters\' names')
 
-    main(argv[1], argv[2] if len(argv) > 2 else 'kemopop.ics')
+    args = parser.parse_args()
+
+    main(args.path, args.output, args.lang)
